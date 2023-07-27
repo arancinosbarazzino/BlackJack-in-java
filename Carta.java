@@ -12,7 +12,7 @@ public class Carta {
     return valore;
   }
 
-  public void setValore(int valore) throws CartaNonValidaException {
+  private void setValore(int valore) throws CartaNonValidaException {
     if (valore < 1 || valore > 13) throw new CartaNonValidaException(
       "Valore maggiore di 13 o minore di 1"
     );
@@ -23,14 +23,19 @@ public class Carta {
     return seme;
   }
 
-  public void setSeme(String seme) throws CartaNonValidaException {
+  private void setSeme(String seme) throws CartaNonValidaException {
     if (
-      seme != "Cuori" || seme != "Fiori" || seme != "Picche" || seme != "Quadri"
+      !(
+        seme.equals("Cuori") ||
+        seme.equals("Fiori") ||
+        seme.equals("Picche") ||
+        seme.equals("Quadri")
+      )
     ) throw new CartaNonValidaException("Seme non esistente");
     this.seme = seme;
   }
 
-  public String toString(){
-    return "Valore: "+valore+", Seme: "+seme;
+  public String toString() {
+    return valore + " di " + seme;
   }
 }

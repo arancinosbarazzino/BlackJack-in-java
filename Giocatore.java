@@ -14,7 +14,7 @@ public class Giocatore {
     return soldi;
   }
 
-  public void setSoldi(int soldi) {
+  private void setSoldi(int soldi) {
     if (soldi > 0) {
       this.soldi = soldi;
     }
@@ -40,5 +40,13 @@ public class Giocatore {
       somma += carta.getValore();
     }
     return somma;
+  }
+
+  public void cancellaMano(){
+    mano.clear();
+  }
+
+  public void rimuoviSoldi(int valore){
+    setSoldi(getSoldi()-valore);
   }
 }
