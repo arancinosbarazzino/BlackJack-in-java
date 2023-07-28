@@ -111,6 +111,13 @@ public class BlackJack {
         "Giocatore " + i + " con quanti soldi inizi a giocare? "
       );
       soldi = tastiera.nextInt();
+      while (soldi <= 0) {
+        System.out.println("Inserisci un valore valido...");
+        System.out.print(
+          "Giocatore " + i + " con quanti soldi inizi a giocare? "
+        );
+        soldi = tastiera.nextInt();
+      }
       return soldi;
     } catch (Exception e) {
       System.out.println("Inserisci un valore valido...");
@@ -168,6 +175,22 @@ public class BlackJack {
     System.out.flush();
   }
 
+  public static int vincita(Giocatore g, Dealer d) {
+    if (g.sommaValori() > 21) {
+      return -1;
+    }
+    if (d.sommaValori() > 21) {
+      return 1;
+    }
+    if (g.sommaValori() > d.sommaValori()) {
+      return 1;
+    }
+    if (g.sommaValori() == d.sommaValori()) {
+      return 0;
+    }
+    return -1;
+  }
+
   public static void main(String[] args) throws CartaNonValidaException {
     creaNuovoMazzo(mazzo);
     int temp;
@@ -192,7 +215,9 @@ public class BlackJack {
         chiediCarta(giocatori[i - 1], i);
       }
       giroDiCarteDealer(dealer);
-
+      for (int i = 1; i < giocatori.length + 1; i++) {
+        if (vincita(giocatori[i - 1], dealer) > 0) {}
+      }
       System.out.print(
         "vuoi continuare? premi x per uscire o un altro tasto + invio per giocare di nuovo "
       );
