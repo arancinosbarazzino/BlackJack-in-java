@@ -21,10 +21,17 @@ public class Giocatore {
   }
 
   public void riceviCarta(Carta c) {
-    if (sommaValori() <= 21) {
+    if (c != null) {
       mano.add(c);
+      if (sommaValori() > 21) {
+        System.out.println(
+          "sforato con " + c.toString() + ", la tua mano vale " + sommaValori()
+        );
+      }
     } else {
-      System.out.println("sforato con "+ c.toString());
+      System.out.println(
+        "Finito il mazzo, riapri il gioco per fare una nuova partita"
+      );
     }
   }
 

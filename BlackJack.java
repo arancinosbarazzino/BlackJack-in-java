@@ -75,41 +75,58 @@ public class BlackJack {
 
   //questo metodo fa un giro di carte però stampa anche tutti i valori delle carte date
   public static void giroDiCarteEsposte(Giocatore[] giocatori) {
+    System.out.println("Inizia il giro di carte scoperte: ");
     for (int i = 1; i < giocatori.length + 1; i++) {
       System.out.println(
-        "Giocatore " + i + " Riceve " + mazzo.peek().toString()
+        "- Giocatore " + i + " riceve " + mazzo.peek().toString()
       );
       giocatori[i - 1].riceviCarta(mazzo.pop());
     }
   }
 
   //giro di carte non esposte, il giocatore decide se prendere carta o fermarsi
-  public static void giroDiCarte(Giocatore[] giocatori) {
+  public static void giroDiCarte(Giocatore giocatore, int i) {
     char scelta = ' ';
-    for (int i = 1; i < giocatori.length + 1; i++) {
-      while (giocatori[i - 1].sommaValori() <= 21 && scelta != 'f') {
-        giocatori[i - 1].stampaMano();
-        System.out.println("Attualmente il valore delle tue carte è: "+giocatori[i-1].sommaValori());
+    while (giocatore.sommaValori() <= 21 && scelta != 'f') {
+      System.out.println("\nGiocatore " + i + " è il tuo turno.");
+      giocatore.stampaMano();
+      System.out.println(
+        "Attualmente il valore delle tue carte è: " + giocatore.sommaValori()
+      );
+      System.out.print(
+        "Giocatore " + i + " carta o ti fermi? (carta=c, fermati=f) "
+      );
+      scelta = tastiera.next().toLowerCase().charAt(0);
+      while (!(scelta == 'c' || scelta == 'f')) {
+        System.out.println("Riprova, non hai scelto nessuna delle 2...");
         System.out.print(
-          "Giocatore " + i + " carta o ti fermi? (carta=c, fermati=f) "
+          "Giocatore " + i + " carta o ti fermi? (carta=c, fermarti=f) "
         );
         scelta = tastiera.next().toLowerCase().charAt(0);
-        while (!(scelta == 'c' || scelta == 'f')) {
-          System.out.println("Riprova, non hai scelto nessuna delle 2...");
-          System.out.print(
-            "Giocatore " + i + " carta o ti fermi? (carta=c, fermarti=f) "
-          );
-          scelta = tastiera.next().toLowerCase().charAt(0);
-        }
-        if (scelta == 'c') {
-          giocatori[i - 1].riceviCarta(mazzo.pop());
-        } else {
-          System.out.println(
-            "Giocatore " + i + " Si ferma con " + giocatori[i - 1].sommaValori()
-          );
-        }
       }
+      if (scelta == 'c') {
+        giocatore.riceviCarta(mazzo.pop());
+      } else {
+        System.out.println(
+          "Giocatore " + i + " Si ferma con " + giocatore.sommaValori()
+        );
+      }
+      clearScreen();
     }
+  }
+
+  //autoesplicativo
+  public static void giroDiCarteDealer(Dealer dealer) {
+    while (dealer.sommaValori() <= 17) {
+      dealer.riceviCarta(mazzo.pop());
+    }
+    dealer.stampaMano();
+  }
+
+  //pulisce il terminale
+  public static void clearScreen() {
+    System.out.print("\033[H\033[2J");
+    System.out.flush();
   }
 
   public static void main(String[] args) throws CartaNonValidaException {
@@ -119,7 +136,9 @@ public class BlackJack {
     char tasto = ' ';
     Giocatore giocatori[] = new Giocatore[numeroGiocatori()];
     for (int i = 1; i < giocatori.length + 1; i++) {
-      System.out.print("Giocatore " + i + " con quanti soldi vuoi iniziare? ");
+      System.out.print(
+        "Giocatore " + i + " con quanti soldi inizi a giocare? "
+      );
       giocatori[i - 1] = new Giocatore(tastiera.nextInt());
     }
     while (tasto != 'x') {
@@ -130,9 +149,12 @@ public class BlackJack {
         giocatori[i - 1].rimuoviSoldi(scommessa);
       }
       dealer.riceviCarta(mazzo.pop());
-      System.out.println("Carte coperte date, ora il giro di carte scoperte");
+      System.out.println("\nCarte coperte date\n");
       giroDiCarteEsposte(giocatori);
-      giroDiCarte(giocatori);
+      for (int i = 1; i < giocatori.length + 1; i++) {
+        giroDiCarte(giocatori[i - 1], i);
+      }
+      giroDiCarteDealer(dealer);
       System.out.print(
         "vuoi continuare? premi x per uscire o un altro tasto + invio per giocare di nuovo "
       );
