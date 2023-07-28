@@ -54,13 +54,6 @@ public class BlackJack {
     }
   }
 
-  //questo metodo viene chiamato alla fine di ogni mano, tutte le carte date vengono tolte
-  public static void pulisciCarte(Giocatore[] giocatori) {
-    for (int i = 0; i < giocatori.length; i++) {
-      giocatori[i].cancellaMano();
-    }
-  }
-
   //autoesplicativo
   public static void stampaSoldiGiocatori(Giocatore[] giocatori) {
     int i = 1;
@@ -80,11 +73,13 @@ public class BlackJack {
         System.out.println("inserisci un numero valido");
         numeroGiocatori = numeroGiocatori();
       }
+      clearScreen();
       return numeroGiocatori;
     } catch (Exception e) {
       System.out.println("inserisci un numero valido");
       tastiera.nextLine();
       numeroGiocatori = numeroGiocatori();
+      clearScreen();
       return numeroGiocatori;
     }
   }
@@ -131,9 +126,11 @@ public class BlackJack {
   public static void chiediCarta(Giocatore giocatore, int i) {
     char scelta = ' ';
     if (giocatore.sommaValori() == 21) {
-      System.out.println("Hai fatto BlackJack");
+      System.out.println("Giocatore" + i + " hai fatto BlackJack");
+      giocatore.stampaMano();
     }
     while (giocatore.sommaValori() < 21 && scelta != 'f') {
+      clearScreen();
       System.out.println("\nGiocatore " + i + " è il tuo turno.");
       giocatore.stampaMano();
       System.out.println(
@@ -157,18 +154,25 @@ public class BlackJack {
           "Giocatore " + i + " si ferma con " + giocatore.sommaValori()
         );
       }
-      // clearScreen();
     }
+    pressEnterToContinue();
   }
 
   //autoesplicativo
   public static void giroDiCarteDealer(Dealer dealer) {
-    while (dealer.sommaValori() <= 17) {
+    while (dealer.sommaValori() < 17) {
       dealer.riceviCarta(mazzo.pop());
+      clearScreen();
+      dealer.stampaMano();
     }
+    clearScreen();
     dealer.stampaMano();
-    if (dealer.sommaValori() < 21) {
-      System.out.println("Il dealer si ferma con " + dealer.sommaValori());
+    if (dealer.sommaValori() <= 21) {
+      System.out.println(
+        "Il dealer si ferma con " + dealer.sommaValori() + "\n"
+      );
+    } else {
+      System.out.println("Il dealer sfora con " + dealer.sommaValori() + "\n");
     }
   }
 
@@ -176,6 +180,14 @@ public class BlackJack {
   public static void clearScreen() {
     System.out.print("\033[H\033[2J");
     System.out.flush();
+  }
+
+  private static void pressEnterToContinue() {
+    System.out.println("Premi invio per continuare...");
+    try {
+      System.in.read();
+      tastiera.nextLine();
+    } catch (Exception e) {}
   }
 
   /* -1 =PERDI TUTTO
@@ -232,6 +244,10 @@ public class BlackJack {
     System.out.println("Giocatore " + i + " ora hai " + g.getSoldi());
   }
 
+  public static void pulisciMano(Dealer d) {
+    d.cancellaMano();
+  }
+
   public static void main(String[] args) throws CartaNonValidaException {
     creaNuovoMazzo(mazzo);
     int temp;
@@ -243,7 +259,6 @@ public class BlackJack {
       giocatori[i - 1] = new Giocatore(temp);
     }
     while (tasto != 'x') {
-      pulisciCarte(giocatori);
       for (int i = 1; i < giocatori.length + 1; i++) {
         temp = scommessaGiocatore(giocatori[i - 1], i);
         giocatori[i - 1].rimuoviSoldi(temp);
@@ -251,21 +266,30 @@ public class BlackJack {
       }
       dealer.riceviCarta(mazzo.pop());
       System.out.println("\nCarte coperte date\n");
+      pressEnterToContinue();
+      clearScreen();
       giroDiCarteEsposte(giocatori);
+      pressEnterToContinue();
+      clearScreen();
       for (int i = 1; i < giocatori.length + 1; i++) {
         chiediCarta(giocatori[i - 1], i);
       }
       giroDiCarteDealer(dealer);
+      pressEnterToContinue();
       for (int i = 1; i < giocatori.length + 1; i++) {
         finePartita(giocatori[i - 1], dealer, i);
       }
       System.out.print(
-        "vuoi continuare? premi x per uscire o un altro tasto + invio per giocare di nuovo "
+        "\nvuoi continuare? premi x per uscire o scrivi continua per continuare"
       );
       tasto = tastiera.next().toLowerCase().charAt(0);
       if (tasto != 'x') {
         scommesse.azzera();
         stampaSoldiGiocatori(giocatori);
+        pulisciMano(dealer);
+        for (int i = 1; i < giocatori.length + 1; i++) {
+          pulisciMano(giocatori[i - 1]);
+        }
       }
     }
     tastiera.close();

@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 
-public class Giocatore {
+public class Giocatore extends Dealer {
 
   private ArrayList<Carta> mano;
   private int soldi;

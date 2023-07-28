@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 
-public class Dealer {
+public class Dealer{
 
   private ArrayList<Carta> mano;
 
