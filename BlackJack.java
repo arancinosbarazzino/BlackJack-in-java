@@ -12,7 +12,7 @@ public class BlackJack {
     throws CartaNonValidaException {
     mazzo.clear();
     //creazione del mazzo
-    for (int i = 1; i < 13; i++) {
+    for (int i = 1; i < 14; i++) {
       int j = i;
       if (i >= 10) {
         j = 10;
@@ -130,6 +130,9 @@ public class BlackJack {
   //giro di carte non esposte, il giocatore decide se prendere carta o fermarsi
   public static void chiediCarta(Giocatore giocatore, int i) {
     char scelta = ' ';
+    if (giocatore.sommaValori() == 21) {
+      System.out.println("Hai fatto BlackJack");
+    }
     while (giocatore.sommaValori() < 21 && scelta != 'f') {
       System.out.println("\nGiocatore " + i + " è il tuo turno.");
       giocatore.stampaMano();
@@ -175,20 +178,58 @@ public class BlackJack {
     System.out.flush();
   }
 
+  /* -1 =PERDI TUTTO
+   * 0 = PAREGGIO (TI RIDANNO QUELLO CHE HAI GIOCATO)
+   * 1 = VITTORIA (PRENDI IL DOPPIO)
+   * 2 = VITTORIA CON BLACK JACK (PRENDI QUELLO CHE HAI GIOCATO + 1,5 VOLTE QUELLO CHE HAI GIOCATO)
+   */
   public static int vincita(Giocatore g, Dealer d) {
+    //sia tu che il dealer avete fatto blackjack
+    if (
+      d.sommaValori() == 21 &&
+      d.getMano().size() == 2 &&
+      g.sommaValori() == 21 &&
+      g.getMano().size() == 2
+    ) {
+      return 0;
+    }
+    //il dealer ha fatto blackjack ma tu no
+    if (d.sommaValori() == 21 && d.getMano().size() == 2) {
+      return -1;
+    }
+    //tu hai fatto blackjack ma il dealer no
+    if (g.sommaValori() == 21 && g.getMano().size() == 2) {
+      return 2;
+    }
+    //hai sforato
     if (g.sommaValori() > 21) {
       return -1;
     }
+    //il dealer ha sforato ma tu no
     if (d.sommaValori() > 21) {
       return 1;
     }
+    //hai fatto + del dealer ma nessuno ha sforato
     if (g.sommaValori() > d.sommaValori()) {
       return 1;
     }
+    //pareggio con il dealer
     if (g.sommaValori() == d.sommaValori()) {
       return 0;
     }
     return -1;
+  }
+
+  public static void finePartita(Giocatore g, Dealer d, int i) {
+    int temp = scommesse.ottieniScommessa(g);
+    if (vincita(g, d) == 0) {
+      g.aggiungiSoldi(temp);
+    } else if (vincita(g, d) == 1) {
+      g.aggiungiSoldi(temp * 2);
+    } else if (vincita(g, d) == 2) {
+      g.aggiungiSoldi((int) (temp + temp * 1.5));
+    }
+    System.out.println("Giocatore " + i + " ora hai " + g.getSoldi());
   }
 
   public static void main(String[] args) throws CartaNonValidaException {
@@ -216,7 +257,7 @@ public class BlackJack {
       }
       giroDiCarteDealer(dealer);
       for (int i = 1; i < giocatori.length + 1; i++) {
-        if (vincita(giocatori[i - 1], dealer) > 0) {}
+        finePartita(giocatori[i - 1], dealer, i);
       }
       System.out.print(
         "vuoi continuare? premi x per uscire o un altro tasto + invio per giocare di nuovo "

@@ -10,6 +10,9 @@ public class Giocatore {
     setSoldi(soldi);
   }
 
+  public ArrayList<Carta> getMano(){
+    return mano;
+  }
   public int getSoldi() {
     return soldi;
   }
@@ -25,7 +28,7 @@ public class Giocatore {
       mano.add(c);
       if (sommaValori() > 21) {
         System.out.println(
-          "sforato con " + c.toString() + ", la tua mano vale " + sommaValori()
+          "Hai sforato con " + c.toString() + ", la tua mano vale " + sommaValori()
         );
       }
     } else {
@@ -64,5 +67,9 @@ public class Giocatore {
 
   public void rimuoviSoldi(int valore) {
     setSoldi(getSoldi() - valore);
+  }
+
+  public void aggiungiSoldi(int valore){
+    rimuoviSoldi(-valore);
   }
 }

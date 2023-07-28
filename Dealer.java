@@ -8,10 +8,14 @@ public class Dealer {
     mano = new ArrayList<Carta>();
   }
 
+  public ArrayList<Carta> getMano(){
+    return mano;
+  }
+
   public void riceviCarta(Carta c) {
     if (c != null) {
       mano.add(c);
-      if (sommaValori() >= 21) {
+      if (sommaValori() > 21) {
         System.out.println(
           "Il dealer sfora con " + c.toString() + ", la sua mano vale " + sommaValori()
         );
